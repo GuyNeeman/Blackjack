@@ -51,11 +51,16 @@ export default function Blackjack() {
 
         const newCard = `${finalNumber}${symbol}`;
 
+        if (cards.includes(newCard)) {
+            console.log("newCard is in the list!");
+            getCards();
+        } else {
         setCurrentnumber(finalNumber);
         setCardvalue(cardValue);
         setCurrentsymbol(symbol);
         setCurrentcard(newCard);
         setCards(prevCards => [...prevCards, newCard]);
+     }
     }
 
     return (
