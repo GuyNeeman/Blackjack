@@ -1,10 +1,16 @@
 import './App.css'
-import Blackjack from "./blackjack.jsx";
+import Table from "./Comp/Table.jsx";
+import Blackjack from "./Comp/CardsGenerator.jsx";
+import {useState} from "react";
 
 function App() {
 
+    const [money, setMoney] = useState(0);
   return (
-    <Blackjack/>
+    <>
+        <Blackjack money={money} setMoney={setMoney}/>
+      <Table></Table>
+    </>
   )
 }
 
