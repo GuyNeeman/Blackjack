@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Blackjack({money, setMoney}) {
+export default function Blackjack({money, setMoney, gameover, setGameover}) {
     const [cardState, setCardState] = useState({
         currentNumber: "",
         currentSymbol: "",
@@ -19,7 +19,6 @@ export default function Blackjack({money, setMoney}) {
         cards: [],
         cardsValue: 0,
     });
-    const [gameover, setGameover] = useState(false);
 
     function getCards() {
         const number = Math.floor(Math.random() * 13) + 2;
