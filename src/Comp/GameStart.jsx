@@ -1,16 +1,16 @@
 import card from '../assets/cards.png'
 import Table from "./Table.jsx";
 
-export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose }) {
+export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose, startScreen, setStartScreen }) {
 
     function setStartfunc() {
-        //startGame();
-        //setStart(false);
         setChose(false);
+        setStartScreen(false);
     }
+
     return (
         <div>
-            {chose && (
+            {startScreen && (
                 <>
                     <h1>Blackjack</h1>
                     <img src={card}/>
@@ -32,12 +32,9 @@ export default function GameStart({ start, setStart, startGame, gameover, user, 
                     <p>© Guy Neeman</p>
                 </>
             )}
-            {!start && (
                 <>
-                    <h1>Blackjack</h1>
-                    <Table chips={chips} setChips={setChips} chose={chose}/>
+                    <Table chips={chips} setChips={setChips} chose={chose} startGame={startGame} setStart={setStart} setChose={setChose}/>
                 </>
-            )}
             {gameover && (
                 <div style={{
                     position: "fixed",

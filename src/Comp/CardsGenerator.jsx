@@ -3,7 +3,7 @@ import Card from "./Card.jsx";
 import '../Styles/CardsGen.css';
 import GameStart from "./GameStart.jsx";
 
-export default function Blackjack({ money, setMoney, gameover, setGameover, setChose, start, setStart, setChips, chips, chose }) {
+export default function Blackjack({ money, setMoney, gameover, setGameover, setChose, start, setStart, setChips, chips, chose, startScreen, setStartScreen }) {
     const [restarts, setRestart] = useState(false);
     const [cardState, setCardState] = useState({
         currentNumber: "",
@@ -198,7 +198,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
 
     return (
         <>
-            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose}/>
+            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen}/>
         <div>
             {!start && (
                 <>

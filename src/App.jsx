@@ -10,11 +10,11 @@ function App() {
     const [chose, setChose] = useState(true);
     const [gameover, setGameover] = useState(false);
     const [start, setStart] = useState(true);
+    const [startScreen, setStartScreen] = useState(true);
 
   return (
       <>
-          <Blackjack chips={chips} setChips={setChips} money={money} setMoney={setMoney} gameover={gameover} setGameover={setGameover} setChose={setChose} start={start} setStart={setStart} chose={chose}/>
-          <Table chips={chips} setChips={setChips} chose={chose}/>
+          <Blackjack chips={chips} setChips={setChips} money={money} setMoney={setMoney} gameover={gameover} setGameover={setGameover} setChose={setChose} start={start} setStart={setStart} chose={chose} setStartScreen={setStartScreen} startScreen={startScreen}/>
       </>
   )
 }

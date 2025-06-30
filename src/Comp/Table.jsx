@@ -1,7 +1,7 @@
 import '../Styles/Table.css';
 import Chip from './Chip.jsx';
 
-export default function Table({ chips, setChips, chose }) {
+export default function Table({ chips, setChips, chose, startGame, setStart, setChose }) {
     const handleChipSelect = (value) => {
         setChips(prevChips => [...prevChips, value]);
     };
@@ -21,11 +21,16 @@ export default function Table({ chips, setChips, chose }) {
 
     const chipValues = [1, 5, 25, 50, 100, 500];
 
-    // Group chips by value into a stack
     const chipStacks = chipValues.reduce((acc, val) => {
         acc[val] = chips.filter(c => c === val);
         return acc;
     }, {});
+
+    function deal() {
+        setStart(false);    // Start the game
+        setChose(true);
+        startGame();        // Actually start the game
+    }
 
     return (
         <>
@@ -40,7 +45,7 @@ export default function Table({ chips, setChips, chose }) {
                     </div>
 
                     <div className="deal">
-                        <button>DEAL</button>
+                        <button onClick={deal}>DEAL</button>
                     </div>
 
                     <div className="chips">
