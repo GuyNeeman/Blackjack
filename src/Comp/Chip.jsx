@@ -4,6 +4,7 @@ import twentyfive from '../assets/twentyfive-chip.png';
 import fifty from '../assets/fiffty-chip.png';
 import onehundred from '../assets/onehundred-chip.png';
 import fivehundred from '../assets/fivehundred-chip.png';
+import '../Styles/Table.css'
 
 export default function Chip({ value, onSelect }) {
     const imageMap = {

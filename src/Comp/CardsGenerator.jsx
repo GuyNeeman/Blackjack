@@ -1,6 +1,10 @@
 import { useState } from "react";
+import Card from "./Card.jsx";
+import '../Styles/CardsGen.css';
+import GameStart from "./GameStart.jsx";
 
-export default function Blackjack({money, setMoney, gameover, setGameover}) {
+export default function Blackjack({ money, setMoney, gameover, setGameover, setChose, start, setStart, setChips, chips, chose }) {
+    const [restarts, setRestart] = useState(false);
     const [cardState, setCardState] = useState({
         currentNumber: "",
         currentSymbol: "",
@@ -64,7 +68,7 @@ export default function Blackjack({money, setMoney, gameover, setGameover}) {
 
         const newCard = `${finalNumber}${symbol}`;
 
-        if (cards.includes(newCard)) {
+        if (cards.some(c => c.currentCard === newCard)) {
             if (cards.length !== 52) {
                 return getCards();
             }
@@ -78,22 +82,24 @@ export default function Blackjack({money, setMoney, gameover, setGameover}) {
             };
 
             setCardState(card);
-            setCards(prevCards => [...prevCards, newCard]);
+            setCards(prevCards => [...prevCards, card]);
 
             return card;
         }
     }
 
-    function setPerson(person, newCard, cardValue) {
+    function setPerson(person, card, valueToAdd) {
         if (person === "user") {
             setUser(prevUser => ({
-                cards: [...prevUser.cards, newCard],
-                cardsValue: prevUser.cardsValue + cardValue,
+                ...prevUser,
+                cards: [...prevUser.cards, card],
+                cardsValue: prevUser.cardsValue + valueToAdd,
             }));
         } else if (person === "dealer") {
             setDealer(prevDealer => ({
-                cards: [...prevDealer.cards, newCard],
-                cardsValue: prevDealer.cardsValue + cardValue,
+                ...prevDealer,
+                cards: [...prevDealer.cards, card],
+                cardsValue: prevDealer.cardsValue + valueToAdd,
             }));
         }
     }
@@ -101,44 +107,48 @@ export default function Blackjack({money, setMoney, gameover, setGameover}) {
     function handleUserDraw() {
         const card = getCards();
         if (card) {
-            if (card.currentNumber === "A" && user.cardsValue + card.cardValue > 21) {
-                setPerson("user", card.currentCard, card.cardValue-10);
-            } else {
-            setPerson("user", card.currentCard, card.cardValue);
-            }
+            const valueToAdd = (card.currentNumber === "A" && user.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
+            setPerson("user", card, valueToAdd);
+            checkWinUser(user.cardsValue + valueToAdd);
         }
-        checkWinUser(card.cardValue+user.cardsValue);
     }
 
     function handleDealerDraw() {
         const card = getCards();
         if (card) {
-            if (card.currentNumber === "A" && dealer.cardsValue + card.cardValue > 21){
-                setPerson("dealer", card.currentCard, card.cardValue-10);
-            } else {
-            setPerson("dealer", card.currentCard, card.cardValue);
-            }
+            const valueToAdd = (card.currentNumber === "A" && dealer.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
+            setPerson("dealer", card, valueToAdd);
         }
     }
 
     const startGame = () => {
-        handleUserDraw()
-        handleDealerDraw()
-        handleUserDraw()
-    }
+        handleUserDraw();
+        handleDealerDraw();
+        handleUserDraw();
+        setUser(prev => ({
+            ...prev,
+            disabled: false,
+            stand: false
+        }));
+        setRestart(false);
+    };
 
-    function restart() {
+    async function restart() {
         setUser(prevUser => ({
             ...prevUser,
             cards: [],
             cardsValue: 0,
+            disabled: true,
+            stand: true,
         }));
         setDealer(prevDealer => ({
             ...prevDealer,
             cards: [],
             cardsValue: 0,
         }));
-        setGameover(false)
+        setCards([]);
+        setGameover(false);
+        setRestart(true);
     }
 
     async function stand() {
@@ -157,19 +167,16 @@ export default function Blackjack({money, setMoney, gameover, setGameover}) {
         while (currentValue < 17) {
             const card = getCards();
             if (card) {
-                let valueToAdd = card.cardValue;
-                if (card.currentNumber === "A" && currentValue + card.cardValue > 21) {
-                    valueToAdd = 1;
-                }
+                let valueToAdd = (card.currentNumber === "A" && currentValue + card.cardValue > 21) ? 1 : card.cardValue;
 
                 currentValue += valueToAdd;
 
                 setDealer(prevDealer => ({
-                    cards: [...prevDealer.cards, card.currentCard],
-                    cardsValue: prevDealer.cardsValue + valueToAdd,
+                    cards: [...prevDealer.cards, card],
+                    cardsValue: currentValue,
                 }));
 
-                await new Promise(res => setTimeout(res, 500)); // simulate delay
+                await new Promise(res => setTimeout(res, 500));
             } else {
                 break;
             }
@@ -178,69 +185,52 @@ export default function Blackjack({money, setMoney, gameover, setGameover}) {
         setGameover(true);
     }
 
-
-
     function checkWinUser(value) {
-        if(value > 21) {
+        if (value > 21) {
             setUser(prevUser => ({
                 ...prevUser,
                 disabled: true,
                 stand: true,
             }));
-            setGameover(true)
+            setGameover(true);
         }
     }
 
     return (
+        <>
+            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose}/>
         <div>
-            {gameover && (
-                <div style={{
-                    position: "fixed",
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    zIndex: 999
-                }}>
-                    <div style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "2rem",
-                        borderRadius: "1rem",
-                        textAlign: "center",
-                        boxShadow: "0 0 20px rgba(0,0,0,0.3)",
-                        maxWidth: "300px"
-                    }}>
-                        <h2>Game Over!</h2>
-                        <p>Your score: {user.cardsValue}</p>
-                        <button onClick={restart} style={{
-                            padding: "0.5rem 1rem",
-                            fontSize: "1rem",
-                            marginTop: "1rem",
-                            cursor: "pointer"
-                        }}>Restart</button>
-                    </div>
-                </div>
-            )}
+            {!start && (
+                <>
+            <p>Money: {money}</p>
+                    {restarts &&(
             <button onClick={startGame}>Start</button>
-
+                    )}
             <div>
-                <h3>User Cards:</h3>
-                {user.cards.map((card, index) => (
-                    <p key={index}>{card}</p>
-                ))}
-                <p>Wert: {user.cardsValue}</p>
+                <h3>Dealer Cards:</h3>
+                <div className="carddealer">
+                    {dealer.cards.map((card, index) => (
+                        <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
+                    ))}
+                </div>
+                <p>Wert: {dealer.cardsValue}</p>
             </div>
 
             <div>
-                <h3>Dealer Cards:</h3>
-                {dealer.cards.map((card, index) => (
-                    <p key={index}>{card}</p>
-                ))}
-                <p>Wert: {dealer.cardsValue}</p>
+                <h3>User Cards:</h3>
+                <div className="carduser">
+                    {user.cards.map((card, index) => (
+                        <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
+                    ))}
+                </div>
+                <p>Wert: {user.cardsValue}</p>
             </div>
 
             <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>
             <button onClick={stand} disabled={user.stand}>Stand</button>
+            </>
+        )}
         </div>
+        </>
     );
 }
