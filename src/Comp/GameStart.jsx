@@ -1,7 +1,7 @@
 import card from '../assets/cards.png'
 import Table from "./Table.jsx";
 
-export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose, startScreen, setStartScreen }) {
+export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose, startScreen, setStartScreen, money }) {
 
     function setStartfunc() {
         setChose(false);
@@ -33,7 +33,7 @@ export default function GameStart({ start, setStart, startGame, gameover, user, 
                 </>
             )}
                 <>
-                    <Table chips={chips} setChips={setChips} chose={chose} startGame={startGame} setStart={setStart} setChose={setChose}/>
+                    <Table chips={chips} setChips={setChips} chose={chose} startGame={startGame} setStart={setStart} setChose={setChose} money={money}/>
                 </>
             {gameover && (
                 <div style={{

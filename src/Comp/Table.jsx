@@ -1,10 +1,11 @@
 import '../Styles/Table.css';
 import Chip from './Chip.jsx';
 
-export default function Table({ chips, setChips, chose, startGame, setStart, setChose }) {
+export default function Table({ chips, setChips, chose, startGame, setStart, setChose, money }) {
     const handleChipSelect = (value) => {
+        if(totalValue + value <=     money) {
         setChips(prevChips => [...prevChips, value]);
-    };
+    }};
 
     const handleChipRemove = (value) => {
         const index = [...chips].reverse().findIndex(chip => chip === value);
@@ -17,7 +18,6 @@ export default function Table({ chips, setChips, chose, startGame, setStart, set
     };
 
     const totalValue = chips.reduce((sum, val) => sum + val, 0);
-    const bankValue = 100;
 
     const chipValues = [1, 5, 25, 50, 100, 500];
 
@@ -27,9 +27,9 @@ export default function Table({ chips, setChips, chose, startGame, setStart, set
     }, {});
 
     function deal() {
-        setStart(false);    // Start the game
+        setStart(false);
         setChose(true);
-        startGame();        // Actually start the game
+        startGame();
     }
 
     return (
@@ -37,7 +37,7 @@ export default function Table({ chips, setChips, chose, startGame, setStart, set
             {!chose && (
                 <>
                     <div className="bank">
-                        Bank: <span>${bankValue}</span>
+                        Bank: <span>${money}</span>
                     </div>
 
                     <div className="total">

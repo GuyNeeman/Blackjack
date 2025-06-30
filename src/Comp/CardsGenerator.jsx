@@ -196,40 +196,47 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         }
     }
 
+    const totalValue = chips.reduce((sum, val) => sum + val, 0);
+
     return (
         <>
-            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen}/>
+            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen} money={money}/>
         <div>
             {!start && (
                 <>
-            <p>Money: {money}</p>
-                    {restarts &&(
-            <button onClick={startGame}>Start</button>
+                    <div className="bank">
+                        Bank: <span>${money}</span>
+                    </div>
+                    <div className="totale">
+                        Wager: <span>${totalValueg}</span>
+                    </div>
+                    {restarts && (
+                        <button onClick={startGame}>Start</button>
                     )}
-            <div>
-                <h3>Dealer Cards:</h3>
-                <div className="carddealer">
-                    {dealer.cards.map((card, index) => (
-                        <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
-                    ))}
-                </div>
-                <p>Wert: {dealer.cardsValue}</p>
-            </div>
+                    <div>
+                        <h3>Dealer Cards:</h3>
+                        <div className="carddealer">
+                            {dealer.cards.map((card, index) => (
+                                <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
+                            ))}
+                        </div>
+                        <p>Wert: {dealer.cardsValue}</p>
+                    </div>
 
-            <div>
-                <h3>User Cards:</h3>
-                <div className="carduser">
-                    {user.cards.map((card, index) => (
-                        <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
-                    ))}
-                </div>
-                <p>Wert: {user.cardsValue}</p>
-            </div>
+                    <div>
+                        <h3>User Cards:</h3>
+                        <div className="carduser">
+                            {user.cards.map((card, index) => (
+                                <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
+                            ))}
+                        </div>
+                        <p>Wert: {user.cardsValue}</p>
+                    </div>
 
-            <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>
-            <button onClick={stand} disabled={user.stand}>Stand</button>
-            </>
-        )}
+                    <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>
+                    <button onClick={stand} disabled={user.stand}>Stand</button>
+                </>
+            )}
         </div>
         </>
     );

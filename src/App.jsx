@@ -5,7 +5,7 @@ import {useState} from "react";
 import GameStart from "./Comp/GameStart.jsx";
 
 function App() {
-    const [money, setMoney] = useState(0);
+    const [money, setMoney] = useState(1000);
     const [chips, setChips] = useState([]);
     const [chose, setChose] = useState(true);
     const [gameover, setGameover] = useState(false);

@@ -6,3 +6,35 @@
     gap: 10px;
     margin-top: 10px;
 }
+
+.bank {
+    position: fixed;
+    left: 30px;
+    top: 30px;
+    background-color: #0b2d1d;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    font-size: 18px;
+}
+
+.bank span {
+    font-weight: bold;
+    color: #00ffae;
+}
+
+.totale {
+    position: fixed;
+    right: 30px;
+    top: 30px;
+    background-color: #0b2d1d;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    font-size: 18px;
+}
+
+.totale span {
+    font-weight: bold;
+    color: #00ffae;
+}
