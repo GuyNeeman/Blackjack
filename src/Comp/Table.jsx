@@ -1,9 +1,9 @@
 import '../Styles/Table.css';
 import Chip from './Chip.jsx';
 
-export default function Table({ chips, setChips, chose, startGame, setStart, setChose, money }) {
+export default function Table({ chips, setChips, chose, startGame, setStart, setChose, money, setMoney }) {
     const handleChipSelect = (value) => {
-        if(totalValue + value <=     money) {
+        if(totalValue + value <= money) {
         setChips(prevChips => [...prevChips, value]);
     }};
 
@@ -29,6 +29,7 @@ export default function Table({ chips, setChips, chose, startGame, setStart, set
     function deal() {
         setStart(false);
         setChose(true);
+        setMoney(money-totalValue)
         startGame();
     }
 

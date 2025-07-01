@@ -105,16 +105,23 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
     }
 
     function handleUserDraw() {
-        const card = getCards();
+        let card = null;
+        while (!card) {
+            card = getCards();
+        }
+
         if (card) {
             const valueToAdd = (card.currentNumber === "A" && user.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
             setPerson("user", card, valueToAdd);
-            checkWinUser(user.cardsValue + valueToAdd);
+            checkLoseUser(user.cardsValue + valueToAdd);
         }
     }
 
     function handleDealerDraw() {
-        const card = getCards();
+        let card = null;
+        while (!card) {
+            card = getCards();
+        }
         if (card) {
             const valueToAdd = (card.currentNumber === "A" && dealer.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
             setPerson("dealer", card, valueToAdd);
@@ -182,16 +189,36 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
             }
         }
 
-        setGameover(true);
+        checkLoseUser(user.cardsValue);
+        checkWinUser(user.cardsValue, currentValue);
     }
 
-    function checkWinUser(value) {
-        if (value > 21) {
+    function checkLoseUser(userValue) {
+        if (userValue > 21) {
             setUser(prevUser => ({
                 ...prevUser,
                 disabled: true,
                 stand: true,
             }));
+            console.log("You busted! Dealer wins.");
+            setGameover(true);
+        }
+    }
+
+    function checkWinUser(userValue, dealerValue) {
+        if (dealerValue > 21 && userValue <= 21) {
+            console.log("Dealer busted! You win!");
+            setMoney(money + totalValue*2)
+            setGameover(true);
+        } else if (userValue > dealerValue && userValue <= 21) {
+            console.log("You win!");
+            setMoney(money + totalValue*2)
+            setGameover(true);
+        } else if (dealerValue === userValue) {
+            console.log("It's a tie!");
+            setGameover(true);
+        } else {
+            console.log("Dealer wins.");
             setGameover(true);
         }
     }
@@ -200,7 +227,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
 
     return (
         <>
-            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen} money={money}/>
+            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen} money={money} setMoney={setMoney}/>
         <div>
             {!start && (
                 <>
@@ -208,7 +235,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
                         Bank: <span>${money}</span>
                     </div>
                     <div className="totale">
-                        Wager: <span>${totalValueg}</span>
+                        Wager: <span>${totalValue}</span>
                     </div>
                     {restarts && (
                         <button onClick={startGame}>Start</button>
