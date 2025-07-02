@@ -5,6 +5,7 @@ import GameStart from "./GameStart.jsx";
 
 export default function Blackjack({ money, setMoney, gameover, setGameover, setChose, start, setStart, setChips, chips, chose, startScreen, setStartScreen }) {
     const [restarts, setRestart] = useState(false);
+    const [message, setMessage] = useState("Unknown");
     const [cardState, setCardState] = useState({
         currentNumber: "",
         currentSymbol: "",
@@ -88,19 +89,42 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         }
     }
 
+    function adjustForAces(cards, total) {
+        let aceCount = cards.filter(card => card.currentNumber === "A").length;
+
+        while (total > 21 && aceCount > 0) {
+            total -= 10;
+            aceCount--;
+        }
+
+        return total;
+    }
+
     function setPerson(person, card, valueToAdd) {
         if (person === "user") {
-            setUser(prevUser => ({
-                ...prevUser,
-                cards: [...prevUser.cards, card],
-                cardsValue: prevUser.cardsValue + valueToAdd,
-            }));
+            setUser(prevUser => {
+                const newCards = [...prevUser.cards, card];
+                let newValue = prevUser.cardsValue + valueToAdd;
+                newValue = adjustForAces(newCards, newValue);
+
+                return {
+                    ...prevUser,
+                    cards: newCards,
+                    cardsValue: newValue,
+                };
+            });
         } else if (person === "dealer") {
-            setDealer(prevDealer => ({
-                ...prevDealer,
-                cards: [...prevDealer.cards, card],
-                cardsValue: prevDealer.cardsValue + valueToAdd,
-            }));
+            setDealer(prevDealer => {
+                const newCards = [...prevDealer.cards, card];
+                let newValue = prevDealer.cardsValue + valueToAdd;
+                newValue = adjustForAces(newCards, newValue);
+
+                return {
+                    ...prevDealer,
+                    cards: newCards,
+                    cardsValue: newValue,
+                };
+            });
         }
     }
 
@@ -111,9 +135,10 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         }
 
         if (card) {
-            const valueToAdd = (card.currentNumber === "A" && user.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
+            const valueToAdd = card.cardValue;
             setPerson("user", card, valueToAdd);
-            checkLoseUser(user.cardsValue + valueToAdd);
+            const simulatedValue = adjustForAces([...user.cards, card], user.cardsValue + valueToAdd);
+            checkLoseUser(simulatedValue);
         }
     }
 
@@ -122,8 +147,9 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         while (!card) {
             card = getCards();
         }
+
         if (card) {
-            const valueToAdd = (card.currentNumber === "A" && dealer.cardsValue + card.cardValue > 21) ? 1 : card.cardValue;
+            const valueToAdd = card.cardValue;
             setPerson("dealer", card, valueToAdd);
         }
     }
@@ -155,7 +181,9 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         }));
         setCards([]);
         setGameover(false);
-        setRestart(true);
+        setChose(false);
+        setChips([]);
+        setStart(true);
     }
 
     async function stand() {
@@ -169,29 +197,31 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
     }
 
     async function dealer16() {
+        let simulatedDealerCards = [...dealer.cards];
         let currentValue = dealer.cardsValue;
 
         while (currentValue < 17) {
             const card = getCards();
-            if (card) {
-                let valueToAdd = (card.currentNumber === "A" && currentValue + card.cardValue > 21) ? 1 : card.cardValue;
+            if (!card) break;
 
-                currentValue += valueToAdd;
+            simulatedDealerCards.push(card);
+            currentValue += card.cardValue;
+            currentValue = adjustForAces(simulatedDealerCards, currentValue);
 
-                setDealer(prevDealer => ({
-                    cards: [...prevDealer.cards, card],
-                    cardsValue: currentValue,
-                }));
+            setDealer({
+                cards: [...simulatedDealerCards],
+                cardsValue: currentValue,
+            });
 
-                await new Promise(res => setTimeout(res, 500));
-            } else {
-                break;
-            }
+            await new Promise(res => setTimeout(res, 500));
         }
 
-        checkLoseUser(user.cardsValue);
-        checkWinUser(user.cardsValue, currentValue);
+        const correctedUserValue = adjustForAces(user.cards, user.cardsValue);
+
+        checkLoseUser(correctedUserValue);
+        checkWinUser(correctedUserValue, currentValue);
     }
+
 
     function checkLoseUser(userValue) {
         if (userValue > 21) {
@@ -200,25 +230,25 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
                 disabled: true,
                 stand: true,
             }));
-            console.log("You busted! Dealer wins.");
+            setMessage("You busted! Dealer wins.");
             setGameover(true);
         }
     }
 
     function checkWinUser(userValue, dealerValue) {
         if (dealerValue > 21 && userValue <= 21) {
-            console.log("Dealer busted! You win!");
-            setMoney(money + totalValue*2)
+            setMessage("Dealer busted! You win!");
+            setMoney(money + totalValue * 2);
             setGameover(true);
         } else if (userValue > dealerValue && userValue <= 21) {
-            console.log("You win!");
-            setMoney(money + totalValue*2)
+            setMessage("You win!");
+            setMoney(money + totalValue * 2);
             setGameover(true);
         } else if (dealerValue === userValue) {
-            console.log("It's a tie!");
+            setMessage("It's a tie!");
             setGameover(true);
         } else {
-            console.log("Dealer wins.");
+            setMessage("Dealer wins.");
             setGameover(true);
         }
     }
@@ -227,44 +257,57 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
 
     return (
         <>
-            <GameStart start={start} setStart={setStart} startGame={startGame} gameover={gameover} restart={restart} user={user} setChips={setChips} chips={chips} chose={chose} setChose={setChose} startScreen={startScreen} setStartScreen={setStartScreen} money={money} setMoney={setMoney}/>
-        <div>
-            {!start && (
-                <>
-                    <div className="bank">
-                        Bank: <span>${money}</span>
-                    </div>
-                    <div className="totale">
-                        Wager: <span>${totalValue}</span>
-                    </div>
-                    {restarts && (
-                        <button onClick={startGame}>Start</button>
-                    )}
-                    <div>
-                        <h3>Dealer Cards:</h3>
-                        <div className="carddealer">
-                            {dealer.cards.map((card, index) => (
-                                <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
-                            ))}
+            <GameStart
+                start={start}
+                setStart={setStart}
+                startGame={startGame}
+                gameover={gameover}
+                restart={restart}
+                user={user}
+                setChips={setChips}
+                chips={chips}
+                chose={chose}
+                setChose={setChose}
+                startScreen={startScreen}
+                setStartScreen={setStartScreen}
+                money={money}
+                setMoney={setMoney}
+                message={message}
+            />
+            <div>
+                {!start && (
+                    <>
+                        <div className="bank">
+                            Bank: <span>${money}</span>
                         </div>
-                        <p>Wert: {dealer.cardsValue}</p>
-                    </div>
-
-                    <div>
-                        <h3>User Cards:</h3>
-                        <div className="carduser">
-                            {user.cards.map((card, index) => (
-                                <Card key={index} value={card.currentNumber} suit={card.currentSymbol}/>
-                            ))}
+                        <div className="totale">
+                            Wager: <span>${totalValue}</span>
                         </div>
-                        <p>Wert: {user.cardsValue}</p>
-                    </div>
+                        <div>
+                            <h3>Dealer Cards:</h3>
+                            <div className="carddealer">
+                                {dealer.cards.map((card, index) => (
+                                    <Card key={index} value={card.currentNumber} suit={card.currentSymbol} />
+                                ))}
+                            </div>
+                            <p>Wert: {dealer.cardsValue}</p>
+                        </div>
 
-                    <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>
-                    <button onClick={stand} disabled={user.stand}>Stand</button>
-                </>
-            )}
-        </div>
+                        <div>
+                            <h3>User Cards:</h3>
+                            <div className="carduser">
+                                {user.cards.map((card, index) => (
+                                    <Card key={index} value={card.currentNumber} suit={card.currentSymbol} />
+                                ))}
+                            </div>
+                            <p>Wert: {user.cardsValue}</p>
+                        </div>
+
+                        <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>
+                        <button onClick={stand} disabled={user.stand}>Stand</button>
+                    </>
+                )}
+            </div>
         </>
     );
 }

@@ -1,7 +1,7 @@
 import card from '../assets/cards.png'
 import Table from "./Table.jsx";
 
-export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose, startScreen, setStartScreen, money, setMoney }) {
+export default function GameStart({ start, setStart, startGame, gameover, user, restart, chips, setChips, chose, setChose, startScreen, setStartScreen, money, setMoney, message }) {
 
     function setStartfunc() {
         setChose(false);
@@ -53,6 +53,7 @@ export default function GameStart({ start, setStart, startGame, gameover, user, 
                         maxWidth: "300px"
                     }}>
                         <h2>Game Over!</h2>
+                        <h2>{message}</h2>
                         <p>Your score: {user.cardsValue}</p>
                         <button onClick={restart} style={{
                             padding: "0.5rem 1rem",
