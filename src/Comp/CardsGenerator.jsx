@@ -154,7 +154,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
         }
     }
 
-    const startGame = () => {
+    function startGame() {
         handleUserDraw();
         handleDealerDraw();
         handleUserDraw();
@@ -164,7 +164,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
             stand: false
         }));
         setRestart(false);
-    };
+    }
 
     async function restart() {
         setUser(prevUser => ({
@@ -290,7 +290,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
                                     <Card key={index} value={card.currentNumber} suit={card.currentSymbol} />
                                 ))}
                             </div>
-                            <p>Wert: {dealer.cardsValue}</p>
+                            <p>Value: {dealer.cardsValue}</p>
                         </div>
 
                         <div>
@@ -300,7 +300,7 @@ export default function Blackjack({ money, setMoney, gameover, setGameover, setC
                                     <Card key={index} value={card.currentNumber} suit={card.currentSymbol} />
                                 ))}
                             </div>
-                            <p>Wert: {user.cardsValue}</p>
+                            <p>Value: {user.cardsValue}</p>
                         </div>
 
                         <button onClick={handleUserDraw} disabled={user.disabled}>Hit</button>

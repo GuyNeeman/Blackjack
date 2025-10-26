@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from '../Styles/Card.module.css';
 
-const Card = ({ value, suit }) => {
-    const getColor = () => {
+export default function Card({ value, suit }) {
+    function getColor() {
         return (suit === '♠' || suit === '♣') ? styles.black : styles.red;
-    };
+    }
 
     return (
         <div className={styles.card}>
@@ -21,6 +21,4 @@ const Card = ({ value, suit }) => {
             </div>
         </div>
     );
-};
-
-export default Card;
+}

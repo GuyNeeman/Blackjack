@@ -41,7 +41,7 @@
     bottom: 5px;
     right: 5px;
     text-align: right;
-    transform: rotate(180deg); /* flips for traditional card appearance */
+    transform: rotate(180deg);
 }
 
 .black {

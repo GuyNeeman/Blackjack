@@ -2,12 +2,12 @@ import '../Styles/Table.css';
 import Chip from './Chip.jsx';
 
 export default function Table({ chips, setChips, chose, startGame, setStart, setChose, money, setMoney }) {
-    const handleChipSelect = (value) => {
+    function handleChipSelect(value) {
         if(totalValue + value <= money) {
         setChips(prevChips => [...prevChips, value]);
-    }};
+    }}
 
-    const handleChipRemove = (value) => {
+    function handleChipRemove(value){
         const index = [...chips].reverse().findIndex(chip => chip === value);
         if (index !== -1) {
             const realIndex = chips.length - 1 - index;
